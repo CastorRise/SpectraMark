@@ -328,4 +328,3 @@ python -m tests.benchmark_algorithms
 - `pyproject.toml` 统一保存 pytest 和 Ruff 配置。
 - GitHub Actions 会在 Python 3.9 与 3.11 上执行 Ruff 和 pytest。
 - `.gitignore` 已排除虚拟环境、缓存、临时输出和 `.DS_Store`。
-- 项目尚未声明开源许可证；发布前应由项目所有者选择并添加合适的 `LICENSE`。
