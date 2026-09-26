@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="利用图片频域信息嵌入并检测 UTF-8 隐形文字水印。">
+  <title>Hidden Watermark · 图片隐藏水印工具</title>
+  <link rel="icon" type="image/svg+xml" href="/static/icons/favicon.svg">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body data-max-characters="{{ max_characters }}" data-max-payload-bytes="{{ max_payload_bytes }}">
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="masthead">
+      <a class="brand" href="/" aria-label="Hidden Watermark 首页">
+        <span class="brand-mark" aria-hidden="true"><span></span></span>
+        <span><strong>Hidden Watermark</strong><small>图片隐藏水印工具</small></span>
+      </a>
+      <p>利用图片频域信息嵌入可检测的隐形文字水印</p>
+    </header>
+
+    <section class="workspace" aria-label="图片水印工作区">
+      <div class="tabs" role="tablist" aria-label="操作类型">
+        <button class="tab active" id="embed-tab" role="tab" aria-selected="true" aria-controls="embed-panel" data-tab="embed">
+          <span>01</span> 添加水印
+        </button>
+        <button class="tab" id="detect-tab" role="tab" aria-selected="false" aria-controls="detect-panel" data-tab="detect">
+          <span>02</span> 检测水印
+        </button>
+      </div>
+
+      <div id="embed-panel" class="panel active" role="tabpanel" aria-labelledby="embed-tab">
+        <div class="grid">
+          <section class="card media-card">
+            <div class="section-heading"><span>图片</span><span class="step">STEP 01</span></div>
+            <label class="dropzone" id="embed-dropzone" for="embed-file">
+              <input id="embed-file" type="file" accept="image/png,image/jpeg" hidden>
+              <span class="upload-icon" aria-hidden="true">↥</span>
+              <strong>拖入图片，或点击选择</strong>
+              <small>PNG · JPG · JPEG，最大 {{ max_upload_mb }} MB / {{ max_pixels_mp }} MP</small>
+            </label>
+            <div class="preview" id="embed-preview" hidden>
+              <img alt="待添加水印的图片预览">
+              <div class="file-meta"></div>
+              <button class="text-button replace-file" type="button">更换图片</button>
+            </div>
+            <div class="capacity" id="capacity-note" aria-live="polite">选择图片后会检查可用水印容量</div>
+          </section>
+
+          <section class="card settings-card">
+            <div class="section-heading"><span>水印设置</span><span class="step">STEP 02</span></div>
+            <form id="embed-form" novalidate>
+              <label class="field-label" for="message">水印内容</label>
+              <div class="textarea-wrap">
+                <textarea id="message" rows="4" placeholder="输入需要隐藏到图片中的文字"></textarea>
+                <span class="counter" id="message-counter">0 / {{ max_characters }} · 0 / {{ max_payload_bytes }} bytes</span>
+              </div>
+              <p class="field-error" id="message-error" hidden></p>
+
+              <fieldset>
+                <legend>水印强度</legend>
+                <div class="segmented strength-options">
+                  <label><input type="radio" name="strength" value="low"><span><b>低</b><small>视觉变化最小</small></span></label>
+                  <label><input type="radio" name="strength" value="balanced" checked><span><b>均衡</b><small>推荐</small></span></label>
+                  <label><input type="radio" name="strength" value="strong"><span><b>强</b><small>更高鲁棒性</small></span></label>
+                </div>
+              </fieldset>
+
+              <div class="settings-row">
+                <fieldset>
+                  <legend>输出格式</legend>
+                  <div class="format-options">
+                    <label><input type="radio" name="output-format" value="png" checked><span>PNG</span></label>
+                    <label><input type="radio" name="output-format" value="jpeg"><span>JPEG</span></label>
+                  </div>
+                </fieldset>
+                <label class="quality-field" id="quality-field" hidden>
+                  <span class="field-label">JPEG Quality</span>
+                  <select id="jpeg-quality">
+                    <option>80</option><option>85</option><option>90</option><option selected>95</option><option>100</option>
+                  </select>
+                </label>
+              </div>
+              <p class="jpeg-note" id="jpeg-note" hidden>JPEG 是有损格式，较低质量可能降低隐藏水印的检测成功率。</p>
+              <button class="primary-button" id="embed-submit" type="submit"><span>添加隐藏水印</span><i aria-hidden="true">→</i></button>
+            </form>
+          </section>
+        </div>
+        <section class="result-card" id="embed-result" hidden aria-live="polite"></section>
+      </div>
+
+      <div id="detect-panel" class="panel" role="tabpanel" aria-labelledby="detect-tab" hidden>
+        <div class="grid detect-grid">
+          <section class="card media-card">
+            <div class="section-heading"><span>待检测图片</span><span class="step">STEP 01</span></div>
+            <label class="dropzone" id="detect-dropzone" for="detect-file">
+              <input id="detect-file" type="file" accept="image/png,image/jpeg" hidden>
+              <span class="upload-icon" aria-hidden="true">⌁</span>
+              <strong>拖入带水印图片</strong>
+              <small>支持本工具生成的 PNG 与 JPEG</small>
+            </label>
+            <div class="preview" id="detect-preview" hidden>
+              <img alt="待检测的图片预览">
+              <div class="file-meta"></div>
+              <button class="text-button replace-file" type="button">更换图片</button>
+            </div>
+          </section>
+          <section class="card detect-action">
+            <div class="section-heading"><span>完整性检测</span><span class="step">STEP 02</span></div>
+            <div class="detect-copy">
+              <div class="radar" aria-hidden="true"><span></span></div>
+              <h2>恢复隐藏文字</h2>
+              <p>系统会验证同步标记、Reed–Solomon 纠错、CRC32 与 UTF‑8 数据，不展示未经验证的内容。</p>
+            </div>
+            <button class="primary-button" id="detect-submit" type="button"><span>检测隐藏水印</span><i aria-hidden="true">→</i></button>
+          </section>
+        </div>
+        <section class="result-card" id="detect-result" hidden aria-live="polite"></section>
+      </div>
+    </section>
+
+    <footer>
+      <p>上传数据可能由服务器临时缓冲；生成文件仅供下载，并会在 30 分钟内自动清理。</p>
+      <span>DWT · DCT · QIM · Reed–Solomon · CRC32</span>
+    </footer>
+  </main>
+</body>
+</html>

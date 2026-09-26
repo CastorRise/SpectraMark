@@ -1,0 +1,10 @@
+from pathlib import Path
+
+APP_VERSION = "1.0.0"
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+MAX_PIXELS = 24_000_000
+ALLOWED_FORMATS = {"PNG", "JPEG"}
+EXPIRY_SECONDS = 30 * 60
+CLEANUP_INTERVAL_SECONDS = 60
+PROCESSING_CONCURRENCY = 1
+TEMP_DIR = Path(__file__).resolve().parent.parent / "temp"
